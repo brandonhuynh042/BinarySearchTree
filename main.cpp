@@ -5,7 +5,7 @@
 
 using namespace std;
 BTree* add(BTree* root, int addInput);
-void remove(BTree* parent, int remInput);
+void remove(BTree* parent, int remInput, BTree* &root);
 void printTree(BTree* root);
 void searchTree(BTree* root, int searchInput);
 int main() {
@@ -40,7 +40,8 @@ int main() {
       cout << "What is the number you'd like to delete?" << endl;
       int remInput;
       cin >> remInput;
-      remove(root, remInput);
+      remove(root, remInput, root);
+      cout << "The root is " << root->getValue() << endl;
     }
     else if (strcmp(input, "PRINT") == 0) {
       printTree(root);
@@ -95,10 +96,60 @@ void searchTree(BTree* root, int searchInput) {
   }
 }
 
-void remove(BTree* parent, int delInput) {
+void remove(BTree* parent, int delInput, BTree* &root) {
   if (parent == NULL) {
     cout << "Empty tree!" << endl;
     return;
+  }
+  if (parent->getValue() == delInput) {
+    if (parent->getRight() == NULL && parent->getLeft() == NULL) {
+      BTree* temp = root;
+      root = NULL;
+      delete temp;
+      return;
+    }
+    if (parent->getRight() == NULL) {
+      BTree* temp = root;
+      root = parent->getLeft();
+      delete temp;
+      return;
+    }
+    if (parent->getLeft() == NULL) {
+      BTree* temp = root;
+      root = parent->getRight();
+      delete temp;
+      return;
+    }
+    else {
+      BTree* temp = parent->getRight();
+      if (temp->getLeft() == NULL) {
+	root->setValue(temp->getValue());
+	if (temp->getRight() != NULL) {
+	  root->setRight(temp->getRight());
+	}
+	else {
+	  root->setRight(NULL);
+	}
+	delete temp;
+	return;
+      }
+    BTree* pTemp = temp;
+    temp = temp->getLeft();
+    while (temp->getLeft() != NULL) {
+      pTemp = temp;
+      temp = temp->getLeft();
+    }
+    root->setValue(temp->getValue());
+    if (temp->getRight() != NULL) {
+      pTemp->setLeft(temp->getRight());
+    }
+    else {
+      pTemp->setLeft(NULL);
+    }
+    delete temp;
+    return;
+
+    }
   }
   if (parent->getLeft() != NULL) { 
   if (parent->getLeft()->getValue() == delInput) {
@@ -124,7 +175,12 @@ void remove(BTree* parent, int delInput) {
     if (temp->getLeft() == NULL) {
       cout << "here" << endl;
       parent->getLeft()->setValue(temp->getValue());
-      parent->getLeft()->setRight(NULL);
+      if (temp->getRight() != NULL) {
+        parent->getLeft()->setRight(temp->getRight());
+      }
+      else {
+        parent->getLeft()->setRight(NULL);
+      }
       delete temp;
       return;
     }
@@ -167,9 +223,13 @@ void remove(BTree* parent, int delInput) {
     }
     BTree* temp = parent->getRight()->getRight();
     if (temp->getLeft() == NULL) {
-      cout << "here" << endl;
       parent->getRight()->setValue(temp->getValue());
-      parent->getRight()->setRight(NULL);
+      if (temp->getRight() != NULL) {
+	parent->getRight()->setRight(temp->getRight());
+      }
+      else {
+	parent->getRight()->setRight(NULL);
+      }
       delete temp;
       return;
     }
@@ -195,9 +255,9 @@ void remove(BTree* parent, int delInput) {
     cout << "Value not found!" << endl;
   }
   if (parent->getValue() > delInput) {
-    remove(parent->getLeft(), delInput);
+    remove(parent->getLeft(), delInput, root);
   }
   else {
-    remove(parent->getRight(), delInput);
+    remove(parent->getRight(), delInput, root);
   }
 }
