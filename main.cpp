@@ -41,7 +41,6 @@ int main() {
       int remInput;
       cin >> remInput;
       remove(root, remInput, root);
-      cout << "The root is " << root->getValue() << endl;
     }
     else if (strcmp(input, "PRINT") == 0) {
       printTree(root);
@@ -103,9 +102,8 @@ void remove(BTree* parent, int delInput, BTree* &root) {
   }
   if (parent->getValue() == delInput) {
     if (parent->getRight() == NULL && parent->getLeft() == NULL) {
-      BTree* temp = root;
+      delete root;
       root = NULL;
-      delete temp;
       return;
     }
     if (parent->getRight() == NULL) {
@@ -124,12 +122,7 @@ void remove(BTree* parent, int delInput, BTree* &root) {
       BTree* temp = parent->getRight();
       if (temp->getLeft() == NULL) {
 	root->setValue(temp->getValue());
-	if (temp->getRight() != NULL) {
 	  root->setRight(temp->getRight());
-	}
-	else {
-	  root->setRight(NULL);
-	}
 	delete temp;
 	return;
       }
@@ -160,14 +153,14 @@ void remove(BTree* parent, int delInput, BTree* &root) {
       return;
     }
     if (parent->getLeft()->getLeft() == NULL) {
-      BTree* temp = parent->getLeft()->getRight();
-      parent->setLeft(temp);
+      BTree* temp = parent->getLeft();
+      parent->setLeft(temp->getRight());
       delete temp;
       return;
     }
     else if (parent->getLeft()->getRight() == NULL) {
-      BTree* temp = parent->getLeft()->getLeft();
-      parent->setLeft(temp);
+      BTree* temp = parent->getLeft();
+      parent->setLeft(temp->getLeft());
       delete temp;
       return;
     }
@@ -210,14 +203,14 @@ void remove(BTree* parent, int delInput, BTree* &root) {
       return;
     }
     if (parent->getRight()->getLeft() == NULL) {
-      BTree* temp = parent->getRight()->getRight();
-      parent->setRight(temp);
+      BTree* temp = parent->getRight();
+      parent->setRight(temp->getRight());
       delete temp;
       return;
     }
     else if (parent->getRight()->getRight() == NULL) {
-      BTree* temp = parent->getRight()->getLeft();
-      parent->setRight(temp);
+      BTree* temp = parent->getRight();
+      parent->setRight(temp->getLeft());
       delete temp;
       return;
     }
